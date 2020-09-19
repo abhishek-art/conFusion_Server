@@ -6,6 +6,20 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var dishRouter = require('./routes/dishRouter')
+var promoRouter = require('./routes/promoRouter')
+var leaderRouter = require('./routes/leaderRouter')
+
+const mongoose = require('mongoose')
+const Dishes = require('./Model/Dishes')
+
+const url = 'mongodb://localhost:27017/conFusion'
+
+mongoose.connect(url)
+.then(()=>{
+  console.log('CONNECTED correctly TO the SERVER')
+})
+.catch(err => console.log(err))
 
 var app = express();
 
@@ -21,6 +35,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/dishes', dishRouter)
+app.use('/promotions', promoRouter)
+app.use('/leaders', leaderRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
