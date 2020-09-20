@@ -13,7 +13,9 @@ var leaderRouter = require('./routes/leaderRouter')
 const mongoose = require('mongoose')
 const Dishes = require('./Model/Dishes')
 const Promotions = require('./Model/Promotions')
-const Leaders = require('./Model/Leaders')
+const Leaders = require('./Model/Leaders');
+const { RSA_NO_PADDING } = require('constants');
+const { Buffer } = require('buffer');
 
 const url = 'mongodb://localhost:27017/conFusion'
 
@@ -33,6 +35,34 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+function auth(req,res,next){
+  console.log(req.headers)
+  var authHeader = req.headers.authorization
+  if (!authHeader){
+    var err = new Error('You are not authorized')
+    res.setHeader('WWW-Authenticate', 'Basic')
+    err.status = 401
+    return next(err)
+  }
+
+  var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':')
+  const username = auth[0]
+  const password = auth[1]
+
+  if(username === 'admin' && password === 'password') {
+    next();
+  }
+  else{
+    var err = new Error('You are not authorized')
+    res.setHeader('WWW-Authenticate', 'Basic')
+    err.status = 401
+    return next(err)
+  }
+}
+
+app.use(auth);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
