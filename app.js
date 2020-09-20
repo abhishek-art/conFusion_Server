@@ -12,6 +12,8 @@ var leaderRouter = require('./routes/leaderRouter')
 
 const mongoose = require('mongoose')
 const Dishes = require('./Model/Dishes')
+const Promotions = require('./Model/Promotions')
+const Leaders = require('./Model/Leaders')
 
 const url = 'mongodb://localhost:27017/conFusion'
 
