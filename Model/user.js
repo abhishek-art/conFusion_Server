@@ -1,20 +1,14 @@
 const mongoose = require('mongoose')
 const schema = mongoose.Schema;
+const Plm = require('passport-local-mongoose')
 
 const user = new schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true
-    },
     admin: {
         type: Boolean,
         default: false,
     }
 })
+
+user.plugin(Plm)
 
 module.exports = mongoose.model('User', user)
