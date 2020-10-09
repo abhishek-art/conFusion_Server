@@ -7,8 +7,18 @@ const Authenti = require('../Authenticate')
 router.use(bodyParser.json())
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/',Authenti.verifyUser , Authenti.verifyAdmin, function(req, res, next) {
+  user.find({}, (err,doc)=>{
+    if(err){
+      res.statusCode = 404
+      res.json({err: err})
+    }
+    else{
+      res.statusCode = 200
+      res.json(doc)
+    }
+  })
+
 });
 
 router.post('/signup', function(req, res, next) {
@@ -20,13 +30,29 @@ router.post('/signup', function(req, res, next) {
       res.json({err:err})
     }
     else{
-      passport.authenticate('local')(req, res, ()=>{
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json')
-        res.json({success: true, status: 'Registration Successful'})
+      if(req.body.firstname){
+        name.firstname = req.body.firstname
+      }
+      if(req.body.lastname){
+        name.lastname = req.body.lastname
+      }
+      name.save((err,doc)=>{
+        if (err){
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.json({err:err})
+          return
+        }
+        else{
+            passport.authenticate('local')(req, res, ()=>{
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json')
+            res.json({success: true, status: 'Registration Successful'})
       })
     }
   })
+}
+})
 })
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
