@@ -37,26 +37,6 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
 
 exports.verifyUser = passport.authenticate('jwt',{session: false})
 
- {/*passport.use("admin" ,new JwtStrategy(opts, 
-    function(jwt_payload, done){
-        user.findOne({_id: jwt_payload._id}, (err,doc)=>{
-            if(err){
-                return done(err,false)
-            }
-            else if(doc.admin){
-                return done(null, doc)
-                }
-            else{
-                var erro = new Error("You are not authorized to perform this operation!")
-                erro.status = 403
-                return done(erro, false)
-            }
-        })
-    })
- )
-
-exports.verifyAdmin = passport.authenticate('admin', {session: false})*/}
-
 exports.verifyAdmin = (req,res,next) => {
     if (req.user.admin){
         return next()

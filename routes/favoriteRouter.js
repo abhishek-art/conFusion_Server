@@ -42,10 +42,15 @@ favoriteRouter.route('/')
             else{
                 doc.save()
                 .then((favdoc)=>{
-                    console.log('Favorite list has been updated', favdoc)
-                    res.statusCode = 200
-                    res.setHeader('Content-Type', 'application/json')
-                    res.json(favdoc)
+                    Favorites.findById(favdoc._id)
+                    .populate('user')
+                    .populate('dishes')
+                    .then((favdoc)=>{
+                        console.log('Favorite list has been updated', favdoc)
+                        res.statusCode = 200
+                        res.setHeader('Content-Type', 'application/json')
+                        res.json(favdoc)
+                    })
                 })
                 .catch(err=> next(err))
             }
@@ -61,10 +66,15 @@ favoriteRouter.route('/')
                     return next(err)
                 }
                 else{
-                    console.log('Favorite list has been created ',favdoc)
-                    res.statusCode = 200
-                    res.setHeader('Content-Type', 'application/json')
-                    res.json(favdoc)
+                    Favorites.findById(favdoc._id)
+                    .populate('user')
+                    .populate('dishes')
+                    .then((favdoc)=>{
+                        console.log('Favorite list has been updated', favdoc)
+                        res.statusCode = 200
+                        res.setHeader('Content-Type', 'application/json')
+                        res.json(favdoc)
+                    })
                 }
             })
         }
@@ -83,6 +93,31 @@ favoriteRouter.route('/')
 
 favoriteRouter.route('/:dishId')
 .options(cors.corsWithOptions, (req,res) => res.sendStatus(200))
+
+.get(cors.cors, Authenticate.verifyUser, (req,res,next)=> {
+    Favorites.findOne({user: req.user._id})
+    .then((favorites)=> {
+        if(!favorites){
+            res.statusCode = 200
+            res.setHeader('Content-Type', 'application/json')
+            res.json({exists: false, favorites: favorites})
+        }
+        else{
+            if(favorites.dishes.indexOf(req.params.dishId) < 0){
+                res.statusCode = 200
+                res.setHeader('Content-Type', 'application/json')
+                res.json({exists: false, favorites: favorites})
+            }
+            else{
+                res.statusCode = 200
+                res.setHeader('Content-Type', 'application/json')
+                res.json({exists: true, favorites: favorites})
+            }
+        }
+    }, err=> next(err))
+    .catch(err=> next(err))
+})
+
 .post(cors.corsWithOptions, Authenticate.verifyUser, (req,res,next)=>{
     Favorites.findOne({user: req.user._id}, (err,doc)=>{
         if(err){
@@ -100,10 +135,15 @@ favoriteRouter.route('/:dishId')
                     if(err){
                         return next(err)}
                     else{
-                        console.log(favdoc)
+                        Favorites.findById(favdoc._id)
+                        .populate('user')
+                        .populate('dishes')
+                        .then((favdoc)=>{
+                        console.log('Favorite list has been updated', favdoc)
                         res.statusCode = 200
                         res.setHeader('Content-Type', 'application/json')
                         res.json(favdoc)
+                    })
                     }
                 })
             }
@@ -117,10 +157,15 @@ favoriteRouter.route('/:dishId')
                     return next(err)
                 }
                 else{
-                    console.log(favdoc)
-                    res.statusCode = 200
-                    res.setHeader('Content-Type', 'application/json')
-                    res.json(favdoc)
+                    Favorites.findById(favdoc._id)
+                    .populate('user')
+                    .populate('dishes')
+                    .then((favdoc)=>{
+                        console.log('Favorite list has been updated', favdoc)
+                        res.statusCode = 200
+                        res.setHeader('Content-Type', 'application/json')
+                        res.json(favdoc)
+                    })
                 }
             })
         }
@@ -141,10 +186,15 @@ favoriteRouter.route('/:dishId')
                         return next(err)
                     }
                     else{
-                        console.log('Favorite dish removed successfully!!')
+                        Favorites.findById(favdoc._id)
+                        .populate('user')
+                        .populate('dishes')
+                        .then((favdoc)=>{
+                        console.log('Favorite list has been updated', favdoc)
                         res.statusCode = 200
                         res.setHeader('Content-Type', 'application/json')
                         res.json(favdoc)
+                    })
                     }
                 })
             }
